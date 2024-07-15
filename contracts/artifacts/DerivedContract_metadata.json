@@ -1,0 +1,72 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "f1",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "f4",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/DerivedContract.sol": "DerivedContract"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/DerivedContract.sol": {
+			"keccak256": "0x86d626f0dc51d91d0672ec6170c862f49f6dea7e03e0815b647178a6a98c932d",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://4effaa3c2a5f22cd3a3024affe94725eb7bae76d2755f0164201352a1ed31b51",
+				"dweb:/ipfs/QmPG7p6ZjxCVaqxmJ7QDojSxnz74G8c7mNnsF74W4Kv4G5"
+			]
+		}
+	},
+	"version": 1
+}
