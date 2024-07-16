@@ -4,4 +4,6 @@
 - Conditions (if/else, require)
 - Modifier
 - Visibility (public, private, internal, external)
-- refrence Data Types (string, array, )
+- Reference Data Types (string, array, mappings, struct )
+- Data Locations Of Reference Data Types (memory, storage, calldata)
+
