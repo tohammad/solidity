@@ -216,7 +216,7 @@ contract Vote {
         stopVoting = true;
     }
 
-    //if votingStatus==NotStarted then do this
+    //if votingStatus==NotStarted then do thiss
     //else if votingStatus==Started then do that
     //else bla bla
 }
