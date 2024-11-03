@@ -7,3 +7,6 @@
 - Reference Data Types (string, array, mappings, struct )
 - Data Locations Of Reference Data Types (memory, storage, calldata)
 
+## Projects
+- Voting
+
