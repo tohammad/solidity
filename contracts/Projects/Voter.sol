@@ -185,10 +185,10 @@ contract Vote {
         uint256 _endTimeDuration
     ) external onlyCommissioner {
         require(
-            _endTimeDuration > 3600,
+            _endTimeDuration >= 3600,
             "_endTimeDuration must be greater than 1 hour"
         );
-        startTime = 1720799550 + _startTimeDuration; //_startTimeDuration = 3600 , _endTimeDuration = 3600
+        startTime = block.timestamp + _startTimeDuration; //_startTimeDuration = 3600 , _endTimeDuration = 3600
         endTime = startTime + _endTimeDuration;
     }
 
