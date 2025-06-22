@@ -13,6 +13,7 @@ contract TokenMarketPlace is Ownable {
     uint256 public tokenPrice = 2e16 wei; // 0.02 ether per GLD token
     uint256 public sellerCount = 1;
     uint256 public buyerCount = 1;
+    uint256 public prevAdjustedRatio;
 
     IERC20 public gldToken;
 
@@ -37,24 +38,25 @@ contract TokenMarketPlace is Ownable {
         uint256 marketDemandRatio = buyerCount.mul(1e18).div(sellerCount);
         uint256 smoothingFactor = 1e18;
         uint256 adjustedRatio = marketDemandRatio.add(smoothingFactor).div(2);
-        uint256 newTokenPrice = tokenPrice.mul(adjustedRatio).div(1e18);
-        uint256 minimumPrice = 2e16;
-        if (newTokenPrice < minimumPrice) {
-            newTokenPrice = minimumPrice;
+        if (prevAdjustedRatio != adjustedRatio) {
+            prevAdjustedRatio = adjustedRatio;
+            uint256 newTokenPrice = tokenPrice.mul(adjustedRatio).div(1e18);
+            uint256 minimumPrice = 2e16;
+            if (newTokenPrice < minimumPrice) {
+                tokenPrice = minimumPrice;
+            }
+            tokenPrice = newTokenPrice;
         }
-        tokenPrice = newTokenPrice;
-        emit TokenPriceUpdated(tokenPrice);
     }
 
     // Buy tokens from the marketplace
     function buyGLDToken(uint256 _amountOfToken) public payable {
-        require(_amountOfToken > 0, "Invalid Token amount");
         uint256 requiredTokenPrice = calculateTokenPrice(_amountOfToken);
-         console.log("msg.value", msg.value);
+        console.log("requiredTokenPrice", requiredTokenPrice);
         require(requiredTokenPrice == msg.value, "Incorrect token price paid");
+        buyerCount = buyerCount + 1;
         // Transfer token to the buyer address
         gldToken.safeTransfer(msg.sender, _amountOfToken);
-        buyerCount = buyerCount + 1;
         // Event Emiting
         emit TokenBought(msg.sender, _amountOfToken, requiredTokenPrice);
     }
