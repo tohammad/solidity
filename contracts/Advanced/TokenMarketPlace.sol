@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-abstract contract TokenMarketPlace is Ownable {
+contract TokenMarketPlace is Ownable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -33,7 +33,7 @@ abstract contract TokenMarketPlace is Ownable {
     }
 
     // Updated logic for token price calculation with safeguards
-    function adjustTokenPriceBasedOnDemand() public view {
+    function adjustTokenPriceBasedOnDemand() public {
         uint256 marketDemandRatio = buyerCount.mul(1e18).div(sellerCount);
         uint256 smoothingFactor = 1e18;
         uint256 adjustedRatio = marketDemandRatio.add(smoothingFactor).div(2);
@@ -42,24 +42,61 @@ abstract contract TokenMarketPlace is Ownable {
         if (newTokenPrice < minimumPrice) {
             newTokenPrice = minimumPrice;
         }
+        tokenPrice = newTokenPrice;
+        emit TokenPriceUpdated(tokenPrice);
     }
 
     // Buy tokens from the marketplace
-    function buyGLDToken(uint256 _amountOfToken) public payable {}
+    function buyGLDToken(uint256 _amountOfToken) public payable {
+        require(_amountOfToken > 0, "Invalid Token amount");
+        uint256 requiredTokenPrice = calculateTokenPrice(_amountOfToken);
+         console.log("msg.value", msg.value);
+        require(requiredTokenPrice == msg.value, "Incorrect token price paid");
+        // Transfer token to the buyer address
+        gldToken.safeTransfer(msg.sender, _amountOfToken);
+        buyerCount = buyerCount + 1;
+        // Event Emiting
+        emit TokenBought(msg.sender, _amountOfToken, requiredTokenPrice);
+    }
 
-    function calculateTokenPrice(uint256 _amountOfToken) public view {
+    function calculateTokenPrice(uint256 _amountOfToken)
+        public
+        returns (uint256)
+    {
         require(_amountOfToken > 0, "Amount Of Token > 0");
         adjustTokenPriceBasedOnDemand();
         uint256 amountToPay = _amountOfToken.mul(tokenPrice).div(1e18);
         console.log("amountToPay", amountToPay);
+        return amountToPay;
     }
 
     // Sell tokens back to the marketplace
-    function sellGLDToken(uint256 amountOfToken) public {}
+    function sellGLDToken(uint256 amountOfToken) public {
+        require(
+            gldToken.balanceOf(msg.sender) >= amountOfToken,
+            "invalid amount of token"
+        );
+        uint256 priceToPayToUser = calculateTokenPrice(amountOfToken);
+        gldToken.safeTransferFrom(msg.sender, address(this), amountOfToken);
+        (bool success, ) = payable(msg.sender).call{value: priceToPayToUser}(
+            ""
+        );
+        require(success, "Transaction Failed");
+        emit TokenSold(msg.sender, amountOfToken, priceToPayToUser);
+    }
 
     // Owner can withdraw excess tokens from the contract
-    function withdrawTokens(uint256 amount) public onlyOwner {}
+    function withdrawTokens(uint256 amount) public onlyOwner {
+        require(gldToken.balanceOf(address(this)) >= amount, "Out of balance");
+        gldToken.safeTransfer(msg.sender, amount);
+        emit TokensWithdrawn(msg.sender, amount);
+    }
 
     // Owner can withdraw accumulated Ether from the contract
-    function withdrawEther(uint256 amount) public onlyOwner {}
+    function withdrawEther(uint256 amount) public onlyOwner {
+        require(address(this).balance >= amount, "Insufficient Ether");
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Ether withdrawal failed");
+        emit EtherWithdrawn(msg.sender, amount);
+    }
 }
